@@ -51,11 +51,21 @@ sequelize.sync({ alter: true }) // Update schema without dropping tables
     console.log("PostgreSQL Error:", err);
   });
 
-// Health check route
-app.get("/", (req, res) => {
+// Serve frontend static files in production
+const path = require("path");
+
+// Health check route (moved to /api)
+app.get("/api", (req, res) => {
   res.json({ status: "ok", message: "Team Task Manager API is running" });
 });
 
+// Serve frontend dist folder
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+// Catch-all route to serve index.html for React Router
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+});
 // Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
