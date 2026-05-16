@@ -1,4 +1,9 @@
-# TaskFlow — Team Task Manager
+# TaskHIVE — Team Task Manager
+
+**🔗 Important Links:**
+- 🌐 **Live Demo (Railway):** [Insert Railway Link Here]
+- 💻 **GitHub Repository:** [https://github.com/KALKIOP/TaskHive](https://github.com/KALKIOP/TaskHive)
+- 🎥 **Demo Video:** [Insert Video Link Here]
 
 A full-stack web application for team project management with role-based access control. Create projects, assign tasks to team members, and track progress with an intuitive dashboard.
 
