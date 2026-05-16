@@ -63,8 +63,13 @@ app.get("/api", (req, res) => {
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
 // Catch-all route to serve index.html for React Router
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+// Using app.use instead of app.get("*") to prevent Express 5 path-to-regexp crash
+app.use((req, res, next) => {
+  if (req.method === 'GET' && !req.path.startsWith('/api')) {
+    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+  } else {
+    next();
+  }
 });
 // Global error handler
 app.use((err, req, res, next) => {
