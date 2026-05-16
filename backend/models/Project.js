@@ -1,25 +1,22 @@
-const mongoose =
-  require("mongoose");
+const { DataTypes } = require("sequelize");
+const sequelize = require("../db");
 
-const projectSchema =
-  new mongoose.Schema(
-    {
-      name: {
-        type: String,
-        required: true
-      },
-
-      description: {
-        type: String
-      }
-    },
-    {
-      timestamps: true
+const Project = sequelize.define("Project", {
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    primaryKey: true
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: { msg: "Project name is required" }
     }
-  );
+  },
+  description: {
+    type: DataTypes.TEXT
+  }
+});
 
-module.exports =
-  mongoose.model(
-    "Project",
-    projectSchema
-  );
+module.exports = Project;

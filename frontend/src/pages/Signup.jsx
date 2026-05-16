@@ -1,13 +1,15 @@
 import { useState } from "react";
 import API from "../api";
-import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
-export default function Login() {
+export default function Signup() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const successMessage = location.state?.message || "";
-
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    role: "member"
+  });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -20,19 +22,21 @@ export default function Login() {
     e.preventDefault();
     setError("");
 
-    if (!form.email || !form.password) {
-      setError("Email and password are required");
+    if (!form.name || !form.email || !form.password) {
+      setError("All fields are required");
+      return;
+    }
+    if (form.password.length < 6) {
+      setError("Password must be at least 6 characters");
       return;
     }
 
     setLoading(true);
     try {
-      const res = await API.post("/api/auth/login", form);
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-      navigate("/dashboard");
+      await API.post("/api/auth/signup", form);
+      navigate("/login", { state: { message: "Account created! Please log in." } });
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed. Please try again.");
+      setError(err.response?.data?.message || "Signup failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -54,18 +58,30 @@ export default function Login() {
               </defs>
             </svg>
           </div>
-          <h1>Welcome Back</h1>
-          <p className="auth-subtitle">Sign in to your team workspace</p>
+          <h1>Create Account</h1>
+          <p className="auth-subtitle">Join your team and start managing projects</p>
         </div>
 
-        {successMessage && <div className="auth-success">{successMessage}</div>}
         {error && <div className="auth-error">{error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label htmlFor="login-email">Email Address</label>
+            <label htmlFor="signup-name">Full Name</label>
             <input
-              id="login-email"
+              id="signup-name"
+              name="name"
+              type="text"
+              placeholder="John Doe"
+              value={form.name}
+              onChange={handleChange}
+              autoComplete="name"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="signup-email">Email Address</label>
+            <input
+              id="signup-email"
               name="email"
               type="email"
               placeholder="john@example.com"
@@ -76,31 +92,44 @@ export default function Login() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="login-password">Password</label>
+            <label htmlFor="signup-password">Password</label>
             <input
-              id="login-password"
+              id="signup-password"
               name="password"
               type="password"
-              placeholder="Enter your password"
+              placeholder="Min. 6 characters"
               value={form.password}
               onChange={handleChange}
-              autoComplete="current-password"
+              autoComplete="new-password"
             />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="signup-role">Role</label>
+            <select
+              id="signup-role"
+              name="role"
+              value={form.role}
+              onChange={handleChange}
+            >
+              <option value="member">Member</option>
+              <option value="admin">Admin</option>
+            </select>
           </div>
 
           <button type="submit" className="auth-btn" disabled={loading}>
             {loading ? (
               <span className="btn-loading">
-                <span className="spinner"></span> Signing in...
+                <span className="spinner"></span> Creating account...
               </span>
             ) : (
-              "Sign In"
+              "Create Account"
             )}
           </button>
         </form>
 
         <p className="auth-switch">
-          Don't have an account? <Link to="/signup">Create one</Link>
+          Already have an account? <Link to="/login">Sign in</Link>
         </p>
       </div>
     </div>

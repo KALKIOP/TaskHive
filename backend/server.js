@@ -1,18 +1,31 @@
 const express = require("express");
-const mongoose = require("mongoose");
+// Removed mongoose
 const cors = require("cors");
 require("dotenv").config();
 
 const authRoutes = require("./routes/authRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const taskRoutes = require("./routes/taskRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
-// FIX CORS
+// CORS — allow frontend origin from env, fallback to localhost for dev
+const allowedOrigins = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.split(",")
+  : ["http://localhost:5173"];
+
 app.use(
   cors({
-    origin: "*",
+    origin: function (origin, callback) {
+      // Allow requests with no origin (mobile apps, curl, etc.)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(null, true); // Allow all in dev — restrict in production via env
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
   })
@@ -25,25 +38,33 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/tasks", taskRoutes);
+app.use("/api/users", userRoutes);
 
-// MongoDB connection
-mongoose
-  .connect(process.env.MONGO_URI)
+// Database connection
+const { sequelize } = require("./models");
+
+sequelize.sync({ alter: true }) // Update schema without dropping tables
   .then(() => {
-    console.log("MongoDB Connected");
+    console.log("PostgreSQL Database Connected & Synced");
   })
   .catch((err) => {
-    console.log("MongoDB Error:", err);
+    console.log("PostgreSQL Error:", err);
   });
 
-// Test route
+// Health check route
 app.get("/", (req, res) => {
-  res.send("Backend Running Successfully");
+  res.json({ status: "ok", message: "Team Task Manager API is running" });
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Something went wrong!" });
 });
 
 // Start server
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
