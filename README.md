@@ -1,9 +1,9 @@
 # TaskHIVE — Team Task Manager
 
 **🔗 Important Links:**
-- 🌐 **Live Demo (Railway):** https://taskhive-production-50d3.up.railway.app/**
+- 🌐 **Live Website (Railway):** https://taskhive-production-50d3.up.railway.app/
 - 💻 **GitHub Repository:** [https://github.com/KALKIOP/TaskHive](https://github.com/KALKIOP/TaskHive)
-- 🎥 **Demo Video:** [Insert Video Link Here]
+- 🎥 **Demo Video:** https://drive.google.com/file/d/103y6TMf1bwHQeVAGwBwzgtLLe9LHoDkP/view?usp=sharing
 
 A full-stack web application for team project management with role-based access control. Create projects, assign tasks to team members, and track progress with an intuitive dashboard.
 
