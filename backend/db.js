@@ -6,13 +6,13 @@ if (process.env.DATABASE_URL) {
   // Railway PostgreSQL (production)
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: "postgres",
+    logging: false,
     dialectOptions: {
-      ssl: {
+      ssl: process.env.DATABASE_URL.includes('railway.internal') ? false : {
         require: true,
         rejectUnauthorized: false
       }
-    },
-    logging: false
+    }
   });
 } else {
   // Local PostgreSQL
